@@ -118,7 +118,7 @@ void Snake::DrawSnake()
 	setColor(10, 0);
 	// 为了节省效率，根据贪吃蛇的规律，我们只需要打印蛇头，删除蛇尾
 	vector<P>::iterator i;
-	i = body.begin();
+	i = body.begin(); // 通过迭代器找到蛇头，打印
 	gotoxy((*i).x, (*i).y);
 	cout << "*";
 	
@@ -130,7 +130,7 @@ void Snake::CleanSnake()
 	//设置颜色为浅绿色
 	setColor(10, 0);
 	vector<P>::iterator i;
-	i = body.end() - 1;
+	i = body.end() - 1; // 通过迭代器找到蛇尾（end 返回的是当前容器最后一个元素的下一位，故要 -1 ）删除
 	gotoxy((*i).x, (*i).y);
 	cout << " ";
 	
@@ -440,8 +440,7 @@ void Snake::SnakeSleep(int level)
 
 
 int main()
-{
-	
+{	
 	bool isAgain = false;
 	while (!isAgain)
 	{
@@ -454,7 +453,7 @@ int main()
 		map.DrawGameInfo(); // 打印游戏信息
 		Snake snake;
 		Food food(snake.body); // 调用有参构造
-	
+
 		while (!snake.isGameOver)
 		{
 			snake.SnakeMove(food); // 蛇的移动
@@ -464,8 +463,12 @@ int main()
 
 		if (snake.score > snake.record) //读取最高分
 			WriteScore(snake.score);
+
+		// 打印是否重新开始游戏的提示
 		gotoxy(BasicSetting::windows_width / 2 - 34, BasicSetting::windows_height / 2 + 3);
 		cout << "重新开始 —— 0\t  \t退出游戏 —— 1" << endl;
+
+		// 进行选择（为了避免按下其他按键而导致不进行判断，故在死循环中进行）
 		while (1)
 		{
 			char tmp = _getch();
@@ -480,7 +483,10 @@ int main()
 				break;
 			}
 		}
+
+		// 此时调用各类的析构函数，结束当前游戏
+		// 虽然重新开始游戏仅需要初始化蛇（因为地图与游戏信息不变）
+		// 但是基于各类之间的相互依赖性，故对整个游戏进行初始化对整体代码变动最小
 	}
-	gotoxy(0, 41);
 	return EXIT_SUCCESS;
 }
