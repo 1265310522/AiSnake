@@ -170,33 +170,29 @@ bool Snake::IsHitBody()
 void Snake::SnakeMove(Food& food)
 {
 	Move(food); // 移动蛇的坐标
+
+	CleanSnake(); // 先删除蛇尾
 	if (this->IsEatFood(food))
 	{
 		food.CreatFood(body); // 如果吃到食物,新建食物
 		this->score++; // 得分 + 1		
 		gotoxy(BasicSetting::windows_width - 22, 4);
-		cout << "当前玩家分数: " << this->score << endl; // 打印分数
-		if (!this->isTurn) // 当未开启手动速度调节模式时
-			GetLevel(); // 判断游戏速度等级
-		gotoxy(BasicSetting::windows_width - 22, 6);
-		cout << "当前速度等级: " << this->level << endl;
-		SnakeSleep(this->level); // 等待刷新
-		CleanSnake(); // 先删除蛇尾
-		DrawSnake(); // 打印蛇
+		cout << "当前玩家分数: " << this->score << endl; // 打印分数	
+		
 		food.DrawFood();
 	}
 	else
-	{
-		if (!this->isTurn) // 当未开启手动速度调节模式时
-			GetLevel(); // 判断游戏速度等级
-		gotoxy(BasicSetting::windows_width - 22, 6);
-		cout << "当前速度等级: " << this->level << endl;
-		SnakeSleep(this->level); // 等待刷新
-		CleanSnake(); // 先删除蛇尾
+	{		
 		body.pop_back(); // 删除最后一个元素
-		DrawSnake(); // 打印蛇头
-
 	}
+
+	if (!this->isTurn) // 当未开启手动速度调节模式时
+		GetLevel(); // 判断游戏速度等级
+	gotoxy(BasicSetting::windows_width - 22, 6);
+	cout << "当前速度等级: " << this->level << endl;
+	SnakeSleep(this->level); // 等待刷新
+	DrawSnake(); // 打印蛇
+
 	if (this->IsHitBody())
 		this->isGameOver = true; // 撞到蛇身，结束游戏
 	if (this->IsHitWall())
