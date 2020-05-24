@@ -93,9 +93,9 @@ bool Map::DrawChoiceInfo() // 选择游戏模式
 	while (1)
 	{
 		char choice = _getch();
-		if (choice == 1)
+		if (choice == '1')
 			return false;
-		else if (choice == 2)
+		else if (choice == '2')
 			return true;
 	}
 	
@@ -190,9 +190,15 @@ bool Snake::IsHitBody()
 void Snake::AiMove(Food& food)
 {
 	this->GetPath(food); // 先找到路径
+	if (this->isGameOver)
+		return;
 	P N_head; // 新的蛇头坐标
 	while (!this->path.empty())
 	{
+		if (_kbhit())
+		{
+			GetKbHit();
+		}
 		N_head = this->path.front(); // 返回队列的第一个坐标
 		this->body.insert(body.begin(), N_head); // 将该坐标的位置压入数组首位，成为新的蛇头
 		this->path.pop(); // 弹出该坐标信息
@@ -318,7 +324,7 @@ void Snake::GetKbHit()
 			else if (temp == '+')
 			{
 				this->isTurn = true; // 开启手动速度调节机制
-				if (this->level < 11) // 最高等级为 10 级
+				if (this->level < 10) // 最高等级为 10 级
 					this->level++;
 				gotoxy(BasicSetting::windows_width - 22, 6);
 				cout << "当前速度等级: " << this->level << endl;
@@ -342,7 +348,7 @@ void Snake::GetKbHit()
 	else if (state == '+')
 	{
 		this->isTurn = true; // 开启手动速度调节机制
-		if (this->level < 11) // 最高等级为 10 级
+		if (this->level < 10) // 最高等级为 10 级
 			this->level++;
 		gotoxy(BasicSetting::windows_width - 22, 6);
 		cout << "当前速度等级: " << this->level << endl;
@@ -506,7 +512,7 @@ void Snake::GetPath(Food& food)
 	}
 	else
 	{
-		exit(0); // 找不到路径就退出游戏
+		this->isGameOver = true;
 	}
 	
 }
