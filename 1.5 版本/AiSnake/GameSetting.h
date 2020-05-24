@@ -6,9 +6,16 @@
 #include<ctime>
 #include<vector>
 #include<fstream>
+#include<queue>
 using namespace std;
 
 class Food;
+
+
+// 定义路径，上下左右
+int Dirx[4] = { 0,0,-1,1 };
+int Diry[4] = { -1,1,0,0 };
+
 
 void WriteScore(int Score) // 记录最高分数
 {
@@ -77,7 +84,9 @@ public:
 
 	static void DrawScore(); // 打印分数	
 
-	static void DrawGameInfo(); // 打印游戏说明
+	static void DrawGameInfo(bool model); // 打印游戏说明
+
+	bool DrawChoiceInfo(); // 选择游戏模式
 };
 
 
@@ -93,6 +102,7 @@ public:
 		level = 1; // 默认等级为 1 级
 		isTurn = false; // 默认关闭手动速度调节机制
 		score = 0; // 默认为零分
+		isAi = false; // 默认为玩家模式
 		isGameOver = false; // 默认游戏未结束
 		direction = STOP; // 默认蛇头不动
 		record = ReadScore();
@@ -107,13 +117,15 @@ public:
 	bool isGameOver; // 判断游戏是否结束
 	int score; // 分数——吃的食物个数
 	int record; // 历史zuigaof
+	bool isAi; // 是否是 Ai 模式
+
 public:
 
 	// 对外接口
 	// 类成员函数
 
 	void SnakeMove(Food& food); // 调用蛇的移动
-
+	void AiMove(Food& food); // 调用 AI 蛇的移动
 private:
 
 	// 枚举各个方向
@@ -145,6 +157,7 @@ private:
 	int direction; // 蛇的移动方向
 	int level; // 蛇的速度等级，等级越高，速度越快
 	bool isTurn; // 是否手动改变游戏速度，若手动改变游戏速度，则关闭自动调节速度机制
+	queue<P> path; // 存放路径的队列
 
 private:
 	// 私有函数
@@ -158,6 +171,7 @@ private:
 	void SnakeSleep(int level); // 刷新率
 	void DrawSnake(); // 打印蛇身
 	void CleanSnake(); // 清楚蛇身
+	void GetPath(Food& food); // 得到路径
 };
 
 
@@ -168,11 +182,11 @@ public:
 		CreatFood(snake);
 		DrawFood(); // 打印食物
 	}
-
 private:
 	// 私有变量
 	// 类成员变量
 	friend class Snake; // 友元类
+	friend class BFS; // 友元类
 	P P_food;
 public:
 	// 对外接口
@@ -182,4 +196,21 @@ private:
 	void CreatFood(vector<P>& snake);
 	void DrawFood(); // 打印食物
 
+};
+
+
+class BFS {
+
+public:
+	bool FindPath(Food& food); // 找到路径（包含无用的信息）
+private:
+	friend class Snake;
+	P head; // 存储蛇头的位置
+	queue<P> path; // 存储路径
+	int bfs_map[BasicSetting::windows_width - 28][BasicSetting::windows_height]; // 二维数组存储
+	P** bfs_father; // 用二维数组存储父节点
+private:
+	void InitMap(vector<P>& snake);
+	queue<P> GetPath(Food& food); // 得到路径（剔除无用的信息）
+	void GetPath_action(P& pos);
 };
