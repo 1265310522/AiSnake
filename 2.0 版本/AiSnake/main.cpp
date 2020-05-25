@@ -77,7 +77,7 @@ void Map::DrawGameInfo(bool model)
 	gotoxy(BasicSetting::windows_width - 22, 34);
 	cout << "作者: 邓皓文" << endl;
 	gotoxy(BasicSetting::windows_width - 22, 36);
-	cout << "版本: 1.0" << endl;
+	cout << "版本: 2.1" << endl;
 }
 
 bool Map::DrawChoiceInfo() // 选择游戏模式
@@ -189,48 +189,64 @@ bool Snake::IsHitBody()
 
 void Snake::AiMove(Food& food)
 {
+
 	this->GetPath(food); // 先找到路径
-	if (this->isGameOver)
-		return;
-	P N_head; // 新的蛇头坐标
-	while (!this->path.empty())
+
+	if (!this->path.empty())
 	{
+		while (!this->path.empty())
+		{
+			if (_kbhit())
+			{
+				GetKbHit();
+			}
+
+			P N_head; // 新的蛇头坐标
+			N_head = this->path.front(); // 返回队列的第一个坐标
+			this->body.insert(body.begin(), N_head); // 将该坐标的位置压入数组首位，成为新的蛇头
+			this->path.pop(); // 弹出该坐标信息
+			CleanSnake(); // 先删除蛇尾
+			if (this->IsEatFood(food)) // 判断是否吃到食物
+			{
+				food.CreatFood(body); // 如果吃到食物,新建食物
+				this->score++; // 得分 + 1		
+				gotoxy(BasicSetting::windows_width - 22, 4);
+				cout << "当前玩家分数: " << this->score << endl; // 打印分数	
+				food.DrawFood();
+			}
+			else
+			{
+				body.pop_back(); // 删除最后一个元素
+			}
+
+			if (!this->isTurn) // 当未开启手动速度调节模式时
+				GetLevel(); // 判断游戏速度等级
+			gotoxy(BasicSetting::windows_width - 22, 6);
+			cout << "当前速度等级: " << this->level << endl;
+
+			DrawSnake(); // 打印蛇
+			SnakeSleep(this->level); // 等待刷新
+
+			if (this->isGameOver == true) // 如果游戏结束,则结束该函数
+				return;
+		}
+	}
+	else
+	{
+		if (this->isGameOver == true) // 如果游戏结束,则结束该函数
+			return;
+
 		if (_kbhit())
 		{
 			GetKbHit();
 		}
-		N_head = this->path.front(); // 返回队列的第一个坐标
-		this->body.insert(body.begin(), N_head); // 将该坐标的位置压入数组首位，成为新的蛇头
-		this->path.pop(); // 弹出该坐标信息
 		CleanSnake(); // 先删除蛇尾
-		if (this->IsEatFood(food)) // 判断是否吃到食物
-		{
-			food.CreatFood(body); // 如果吃到食物,新建食物
-			this->score++; // 得分 + 1		
-			gotoxy(BasicSetting::windows_width - 22, 4);
-			cout << "当前玩家分数: " << this->score << endl; // 打印分数	
-			food.DrawFood();
-		}
-		else
-		{
-			body.pop_back(); // 删除最后一个元素
-		}
-
-		if (!this->isTurn) // 当未开启手动速度调节模式时
-			GetLevel(); // 判断游戏速度等级
-		gotoxy(BasicSetting::windows_width - 22, 6);
-		cout << "当前速度等级: " << this->level << endl;
+		body.pop_back(); // 删除最后一个元素
 		DrawSnake(); // 打印蛇
 		SnakeSleep(this->level); // 等待刷新
-		if (this->IsHitBody())
-			this->isGameOver = true; // 撞到蛇身，结束游戏
 
-		if (this->IsHitWall())
-			this->isGameOver = true; // 撞到墙，结束游戏
-
-		if (this->isGameOver == true) // 如果游戏结束,则结束该函数
-			return;
 	}
+
 }
 
 void Snake::SnakeMove(Food& food)
@@ -512,6 +528,23 @@ void Snake::GetPath(Food& food)
 	}
 	else
 	{
+		P head = this->body.front(); // 得到蛇头
+		P next;
+		Ai.InitMap(this->body); // 刷新地图信息
+		for (int i = 0; i < 4; i++)
+		{
+			next.x = head.x + Dirx[i];
+			next.y = head.y + Diry[i];
+
+			if (Ai.bfs_map[next.x][next.y] == 1) // 如果下一个节点不可访问，跳过本次循环
+				continue;
+			else
+			{
+				this->body.insert(body.begin(), next); // 将该坐标的位置压入数组首位，成为新的蛇头
+				return;
+			}
+		}
+		// 检测到四个方向都不可移动时
 		this->isGameOver = true;
 	}
 	
@@ -589,18 +622,6 @@ void BFS::InitMap(vector<P>& snake)
 	}
 
 	this->head = snake.front(); // 得到蛇头的位置
-
-	// 申请一个二维数组用于存储父节点信息
-	this->bfs_father = new P * [BasicSetting::windows_width - 28];
-	for (int i = 0; i < BasicSetting::windows_width - 28; i++)
-	{
-		this->bfs_father[i] = new P[BasicSetting::windows_height];
-	}
-
-	// 在父节点图中标记出蛇头的位置
-	bfs_father[this->head.x][this->head.y].x = -1;
-	bfs_father[this->head.x][this->head.y].y = -1;
-
 }
 
 queue<P> BFS::GetPath(Food& food)

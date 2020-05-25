@@ -202,9 +202,30 @@ private:
 class BFS {
 
 public:
+
 	BFS(vector<P>& snake)
 	{
 		InitMap(snake);
+
+		// 申请一个二维数组用于存储父节点信息
+		this->bfs_father = new P * [BasicSetting::windows_width - 28];
+		for (int i = 0; i < BasicSetting::windows_width - 28; i++)
+		{
+			this->bfs_father[i] = new P[BasicSetting::windows_height];
+		}
+
+		// 在父节点图中标记出蛇头的位置
+		bfs_father[this->head.x][this->head.y].x = -1;
+		bfs_father[this->head.x][this->head.y].y = -1;
+	}
+	~BFS()
+	{
+		// 释放内存空间
+		for (int i = 0; i < BasicSetting::windows_width - 28; i++)
+		{
+			delete[] bfs_father[i];
+		}
+		delete[] bfs_father;
 	}
 	bool FindPath(Food& food); // 找到路径（包含无用的信息）
 private:

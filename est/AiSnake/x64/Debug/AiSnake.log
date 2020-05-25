@@ -1,0 +1,47 @@
+﻿  main.cpp
+D:\Cooder\Github\AiSnake\3.99 版本\AiSnake\main.cpp(11,21): warning C4129: “C”: 不可识别的字符转义序列
+D:\Cooder\Github\AiSnake\3.99 版本\AiSnake\main.cpp(11,21): warning C4129: “G”: 不可识别的字符转义序列
+D:\Cooder\Github\AiSnake\3.99 版本\AiSnake\main.cpp(11,21): warning C4129: “A”: 不可识别的字符转义序列
+D:\Cooder\Github\AiSnake\3.99 版本\AiSnake\main.cpp(11,21): warning C4129: “P”: 不可识别的字符转义序列
+D:\Cooder\Github\AiSnake\3.99 版本\AiSnake\main.cpp(11,21): warning C4129: “e”: 不可识别的字符转义序列
+D:\Cooder\Github\AiSnake\3.99 版本\AiSnake\main.cpp(13,22): warning C4129: “C”: 不可识别的字符转义序列
+D:\Cooder\Github\AiSnake\3.99 版本\AiSnake\main.cpp(13,22): warning C4129: “G”: 不可识别的字符转义序列
+D:\Cooder\Github\AiSnake\3.99 版本\AiSnake\main.cpp(13,22): warning C4129: “A”: 不可识别的字符转义序列
+D:\Cooder\Github\AiSnake\3.99 版本\AiSnake\main.cpp(13,22): warning C4129: “P”: 不可识别的字符转义序列
+D:\Cooder\Github\AiSnake\3.99 版本\AiSnake\main.cpp(13,22): warning C4129: “w”: 不可识别的字符转义序列
+D:\Cooder\Github\AiSnake\3.99 版本\AiSnake\main.cpp(16,48): warning C4552: ”+“: 未使用表达式结果
+D:\Cooder\Github\AiSnake\3.99 版本\AiSnake\main.cpp(19,54): warning C4552: ”+“: 未使用表达式结果
+D:\Cooder\Github\AiSnake\3.99 版本\AiSnake\main.cpp(21,49): warning C4552: ”+“: 未使用表达式结果
+D:\Cooder\Github\AiSnake\3.99 版本\AiSnake\main.cpp(38,48): warning C4552: ”+“: 未使用表达式结果
+LINK : warning LNK4098: 默认库“MSVCRT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
+graphics1964.lib(color.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(color.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(egecontrolbase.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(egecontrolbase.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(egegapi.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(egegapi.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(graphics.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(graphics.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(image.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(image.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(logo.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(logo.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(adler32.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(adler32.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(compress.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(compress.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(crc32.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(crc32.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(deflate.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(deflate.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(inffast.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(inffast.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(inflate.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(inflate.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(inftrees.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(inftrees.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(png.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(png.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(pngerror.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(pngerror.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(pngget.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(pngget.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(pngmem.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(pngmem.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(pngread.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(pngread.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(pngrio.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(pngrio.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(pngrtran.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(pngrtran.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(pngrutil.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(pngrutil.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(pngset.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(pngset.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(pngtrans.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(pngtrans.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(pngwio.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(pngwio.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(pngwrite.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(pngwrite.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(pngwtran.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(pngwtran.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(pngwutil.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(pngwutil.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(trees.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(trees.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(uncompr.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(uncompr.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+graphics1964.lib(zutil.obj) : warning LNK4099: 未找到 PDB“graphics19.pdb”(使用“graphics1964.lib(zutil.obj)”或在“D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\graphics19.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+  AiSnake.vcxproj -> D:\Cooder\Github\AiSnake\3.99 版本\x64\Debug\AiSnake.exe
