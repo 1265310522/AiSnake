@@ -5,50 +5,17 @@
 #include<conio.h>
 #include<ctime>
 #include<vector>
-#include<fstream>
+#include<fstream> // 文件操作头文件
 #include<queue>
+#include <thread> // 多线程头文件
 using namespace std;
 
 class Food;
 
-
-// 定义路径，上下左右
-int Dirx[4] = { 0,0,-1,1 };
-int Diry[4] = { -1,1,0,0 };
-
-
-void WriteScore(int Score) // 记录最高分数
-{
-	ofstream OutFile;
-	OutFile.open("Score.txt"); // 打开分数文件夹
-	OutFile << Score << endl; // 录入分数
-	OutFile.close(); // 关闭文件夹
-}
-
-int ReadScore() // 读取最高分数
-{
-	int score = 0; // 分数
-	ifstream ReadFile;
-	ReadFile.open("Score.txt"); // 打开文件夹
-	ReadFile >> score; // 读取分数
-	ReadFile.close(); // 关闭文件夹
-	return score;
-}
-
-
-// gotoxy(x,y) : 将光标移动到 x 行 y 列
-void gotoxy(SHORT x, SHORT y) {
-	COORD pos = { x,y };
-	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);// 获取标准输出设备句柄
-	SetConsoleCursorPosition(hOut, pos);//两个参数分别是指定哪个窗体，具体位置
-}
-
-//设置颜色 
-void setColor(unsigned short ForeColor, unsigned short BackGroundColor)
-{
-	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);//获取当前窗口句柄
-	SetConsoleTextAttribute(handle, ForeColor + BackGroundColor * 0x10);//设置颜色
-}
+void gotoxy(SHORT x, SHORT y);
+void setColor(unsigned short ForeColor, unsigned short BackGroundColor);
+int ReadScore();
+void WriteScore(int Score);
 
 typedef struct Point {
 	int x;
