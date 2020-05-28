@@ -1,11 +1,12 @@
 ﻿  GameSetting.cpp
-D:\Cooder\Github\AiSnake\2.5 版本(EGE)\EGE_snake\EGE_snake\GameSetting.cpp(26,3): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-D:\Cooder\Github\AiSnake\2.5 版本(EGE)\EGE_snake\EGE_snake\GameSetting.cpp(28,3): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
 D:\Cooder\Github\AiSnake\2.5 版本(EGE)\EGE_snake\EGE_snake\GameSetting.cpp(30,3): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-D:\Cooder\Github\AiSnake\2.5 版本(EGE)\EGE_snake\EGE_snake\GameSetting.cpp(74,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-D:\Cooder\Github\AiSnake\2.5 版本(EGE)\EGE_snake\EGE_snake\GameSetting.cpp(84,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-D:\Cooder\Github\AiSnake\2.5 版本(EGE)\EGE_snake\EGE_snake\GameSetting.cpp(94,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-D:\Cooder\Github\AiSnake\2.5 版本(EGE)\EGE_snake\EGE_snake\GameSetting.cpp(104,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\Cooder\Github\AiSnake\2.5 版本(EGE)\EGE_snake\EGE_snake\GameSetting.cpp(32,3): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\Cooder\Github\AiSnake\2.5 版本(EGE)\EGE_snake\EGE_snake\GameSetting.cpp(34,3): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\Cooder\Github\AiSnake\2.5 版本(EGE)\EGE_snake\EGE_snake\GameSetting.cpp(78,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\Cooder\Github\AiSnake\2.5 版本(EGE)\EGE_snake\EGE_snake\GameSetting.cpp(88,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\Cooder\Github\AiSnake\2.5 版本(EGE)\EGE_snake\EGE_snake\GameSetting.cpp(98,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\Cooder\Github\AiSnake\2.5 版本(EGE)\EGE_snake\EGE_snake\GameSetting.cpp(108,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\Cooder\Github\AiSnake\2.5 版本(EGE)\EGE_snake\EGE_snake\GameSetting.cpp(806,4): warning C4101: “tmp_of_rand”: 未引用的局部变量
   mian.cpp
   正在生成代码...
 LINK : warning LNK4098: 默认库“MSVCRT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library

@@ -8,6 +8,7 @@ mouse_msg msg = { 0 };
 extern PIMAGE game_start; // 游戏开始图片
 extern PIMAGE game_help; // 游戏帮助图片
 extern PIMAGE game_leaderboard; // 排行榜图片
+extern PIMAGE game_model; // 模式图片
 
 void WriteScore(int Score) // 记录最高分数
 {
@@ -54,12 +55,12 @@ enum flag {
 	quit = 3,
 };
 
-int mouse(int x1, int y1, int x2, int y2)   //判断在(x1,y1)(x2,y2)矩形范围内单机左键 
-{
-	if (msg.x > x1 && msg.x<x2 && msg.y > y1 && msg.y < y2 && (int)msg.is_down() == 1 && (int)msg.is_left() == 1)
-		return 1;
-	return 0;
-}
+//int mouse(int x1, int y1, int x2, int y2)   //判断在(x1,y1)(x2,y2)矩形范围内单机左键 
+//{
+//	if (msg.x > x1 && msg.x<x2 && msg.y > y1 && msg.y < y2 && (int)msg.is_down() == 1 && (int)msg.is_left() == 1)
+//		return 1;
+//	return 0;
+//}
 
 void Menu()
 {
@@ -67,8 +68,32 @@ void Menu()
 	bool is_quie = false;
 	while (!is_quie)
 	{
-		putimage(0, 0, game_start);
+		putimage(0, 0, 900, 680, game_start, 0, 0, 900, 680);
 		for (; is_run(); delay_fps(60))
+		{
+			if (GetAsyncKeyState(key_num1))
+			{
+				flag = playgame;
+				break;
+			}
+			else if (GetAsyncKeyState(key_num2))
+			{
+				flag = leaderboard;
+				break;
+			}
+			else if (GetAsyncKeyState(key_num3))
+			{
+				flag = help;
+				break;
+			}
+			else if (GetAsyncKeyState(key_num4))
+			{
+				flag = quit;
+				break;
+			}
+		}
+
+		/*for (; is_run() ; delay_fps(60))
 		{
 			while (mousemsg())
 			{
@@ -94,7 +119,7 @@ void Menu()
 				flag = quit;
 				break;
 			}
-		}
+		}*/
 
 		switch (flag)
 		{
@@ -103,11 +128,11 @@ void Menu()
 			getch();
 			break;
 		case help:
-			putimage(0, 0, game_help);
+			putimage(0, 0,900,680, game_help, 0, 0, 900, 680);
 			getch();
 			break;
 		case leaderboard:
-			putimage(0, 0, game_leaderboard);
+			putimage(0, 0, 900, 680, game_leaderboard, 0, 0, 900, 680);
 			getch();
 			break;
 		case quit:
@@ -119,7 +144,23 @@ void Menu()
 
 void PlageGame()
 {
-
+	// 模式选择
+	bool model = false;
+	putimage(0, 0, game_model);
+	while(1)
+	{
+		Sleep(200);
+		if (GetAsyncKeyState(key_num1))
+		{
+			model = false;
+			break;
+		}
+		else if (GetAsyncKeyState(key_num2))
+		{
+			model = true;
+			break;
+		}
+	}
 	// 音乐
 	MUSIC music;
 
@@ -131,21 +172,31 @@ void PlageGame()
 
 	// 蛇类
 	Snake snake;
+	snake.isAi = model;
 
 	// 食物类
 	Food food(snake.body);
 
 	double starttime = fclock();
-	PlayMusic(music, snake.music_num, snake.is_music_play);
+	PlayMusic(music, snake.music_num, snake.is_music_play, snake.type_change);
+	snake.type_change = false;
 	DrawMusic(1);
+	
+	// 进入游戏
 	while (!snake.isGameOver)
 	{
 		if (snake.is_music_change)
 		{
-			PlayMusic(music, snake.music_num, snake.is_music_play);
+			PlayMusic(music, snake.music_num, snake.is_music_play,snake.type_change);
 			snake.is_music_change = false;
+			snake.type_change = false; 
 		}
-		snake.PlayerMove(food, starttime, music);
+		if (music.GetPlayStatus() == MUSIC_MODE_STOP && snake.is_music_play == true)
+			music.Play(0);
+		if (!snake.isAi)
+			snake.PlayerMove(food, starttime, music);
+		else
+			snake.AiMove(food, starttime, music);
 	}
 
 	snake.GameOver();

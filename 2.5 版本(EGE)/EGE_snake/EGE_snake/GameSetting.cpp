@@ -4,6 +4,7 @@ PIMAGE game_start; // 游戏开始图片
 PIMAGE game_help; // 游戏帮助图片
 PIMAGE game_leaderboard; // 排行榜图片
 PIMAGE game_over; // 游戏结束图片
+PIMAGE game_model; // 空地的图片
 PIMAGE wall; // 墙的图片
 PIMAGE empty; // 空地的图片
 PIMAGE food_tomato; // 番茄食物的图片
@@ -15,6 +16,9 @@ PIMAGE snake_head_down; // 蛇头向下
 PIMAGE snake_head_left; // 蛇头向左
 PIMAGE snake_head_right; // 蛇头向右
 
+// 定义路径，上下左右
+int Dirx[4] = { 0,0,-1,1 };
+int Diry[4] = { -1,1,0,0 };
 
 void DrawMusic(int type)
 {
@@ -105,15 +109,18 @@ void DrawTime(double time)
 	outtextrect(715, 195, 815, 235, str);
 }
 
-void PlayMusic(MUSIC& music, int type, bool play)
+void PlayMusic(MUSIC& music, int type, bool play, bool type_change)
 {
-	if (type == 1)
-		music.OpenFile("Jo Blankenburg - Memento.mp3");
-	else if (type == 2)
-		music.OpenFile("傅许 - 夏日之梦.mp3");
-	else if (type == 3)
-		music.OpenFile("天门 (てんもん) - 想い出は遠くの日々.mp3");
-	DrawMusic(type);
+	if (type_change)
+	{
+		if (type == 1)
+			music.OpenFile("Jo Blankenburg - Memento.mp3");
+		else if (type == 2)
+			music.OpenFile("傅许 - 夏日之梦.mp3");
+		else if (type == 3)
+			music.OpenFile("天门 (てんもん) - 想い出は遠くの日々.mp3");
+		DrawMusic(type);
+	}
 	if (play)
 		music.Play(); // 播放音乐
 	else
@@ -137,11 +144,13 @@ void GetImage()
 	game_help = newimage();
 	game_over = newimage();
 	game_leaderboard = newimage();
+	game_model = newimage();
 
 	getimage(game_start, "gamestart.png");
+	getimage(game_model, "model.png");
 	getimage(game_help, "help.png");
 	getimage(game_over, "gameover.png");
-	getimage(game_leaderboard, "leaderboard");
+	getimage(game_leaderboard, "leaderboard.png");
 	getimage(wall, "Carrot.png");
 	getimage(food_tomato, "fanqie.png");
 	getimage(food_mushroom, "mushroom.png");
@@ -185,12 +194,9 @@ void Map::DrawMap()
 
 Snake::Snake()
 {
-	P tmp_of_rand;
-	tmp_of_rand.x = rand() % (33) + 1; // x 的范围为 1-33
-	tmp_of_rand.y = rand() % (26) + 1; // y 的范围为 1-26
 	P head;
-	head.x = tmp_of_rand.x * 20;
-	head.y = tmp_of_rand.y * 20;
+	head.x = rand() % (33) + 1; // x 的范围为 1-33
+	head.y = rand() % (26) + 1; // y 的范围为 1-26
 	body.push_back(head);
 	this->isEatFood = false;
 	this->isGameOver = false;
@@ -202,7 +208,8 @@ Snake::Snake()
 	this->is_music_play = true;
 	this->is_music_change = false;
 	this->is_music_play = true;
-	this->isAi = false;
+	this->type_change = true;
+	this->isAi = true;
 	DrawSnake();
 }
 
@@ -211,21 +218,21 @@ void Snake::DrawSnake()
 	P head = this->body.front();
 
 	if (this->direction == STOP)
-		putimage(head.x, head.y, snake_head_up);
+		putimage(head.x*20, head.y*20, snake_head_up);
 
 	switch (this->direction)
 	{
 	case UP:
-		putimage(head.x, head.y, snake_head_up);
+		putimage(head.x*20, head.y*20, snake_head_up);
 		break;
 	case DOWN:
-		putimage(head.x, head.y, snake_head_down);
+		putimage(head.x*20, head.y*20, snake_head_down);
 		break;
 	case LEFT:
-		putimage(head.x, head.y, snake_head_right);
+		putimage(head.x*20, head.y*20, snake_head_right);
 		break;
 	case RIGHT:
-		putimage(head.x, head.y, snake_head_left);
+		putimage(head.x*20, head.y*20, snake_head_left);
 		break;
 	}
 
@@ -233,7 +240,7 @@ void Snake::DrawSnake()
 	{
 		std::vector<P>::iterator it;
 		it = this->body.begin() + 1;
-		putimage((*it).x, (*it).y, snake_body);
+		putimage((*it).x*20, (*it).y*20, snake_body);
 
 	}
 }
@@ -241,7 +248,7 @@ void Snake::DrawSnake()
 void Snake::CleanSnake()
 {
 	P tail = this->body.back(); // 获得蛇尾信息
-	putimage(tail.x, tail.y, empty); // 删除蛇尾(打印空地图片)
+	putimage(tail.x*20, tail.y*20, empty); // 删除蛇尾(打印空地图片)
 }
 
 
@@ -273,16 +280,16 @@ void Snake::PlayerMove(Food& food, double starttime, MUSIC& music)
 	switch (this->direction)
 	{
 	case UP:
-		N_head.y -= 20;
+		N_head.y--;
 		break;
 	case DOWN:
-		N_head.y += 20;
+		N_head.y++;
 		break;
 	case LEFT:
-		N_head.x -= 20;
+		N_head.x--;
 		break;
 	case RIGHT:
-		N_head.x += 20;
+		N_head.x++;
 		break;
 	default:
 		break;
@@ -387,7 +394,7 @@ void Snake::GetDirection_Stop(double starttime, MUSIC& music)
 		double nowtime = fclock();
 		double time = nowtime - starttime;
 		DrawTime(time);
-		Sleep(300);
+		Sleep(200);
 		if (GetAsyncKeyState(VK_ADD)) // 按键为小键盘上的 + 时
 		{
 			this->speedModel = true;
@@ -410,33 +417,31 @@ void Snake::GetDirection_Stop(double starttime, MUSIC& music)
 		}
 		else if (GetAsyncKeyState('Q') || GetAsyncKeyState('q'))
 		{
-			//is_music_change = true;
+			type_change = true;
 			if (this->music_num > 1)
 				this->music_num--;
 			else
 				this->music_num = 3;
-			PlayMusic(music, music_num, is_music_play);
+			PlayMusic(music, music_num, is_music_play , type_change);
 		}
 		else if (GetAsyncKeyState('E') || GetAsyncKeyState('e'))
 		{
-			//is_music_change = true;
+			type_change = true;
 			if (this->music_num < 3)
 				this->music_num++;
 			else
 				this->music_num = 1;
-			PlayMusic(music, music_num, is_music_play);
+			PlayMusic(music, music_num, is_music_play,type_change);
 		}
 		else if (GetAsyncKeyState('Y') || GetAsyncKeyState('y'))
 		{
-			//is_music_change = true;
 			is_music_play = true;
-			PlayMusic(music, music_num, is_music_play);
+			PlayMusic(music, music_num, is_music_play,type_change);
 		}
 		else if (GetAsyncKeyState('N') || GetAsyncKeyState('n'))
 		{
-			//is_music_change = true;
 			is_music_play = false;
-			PlayMusic(music, music_num, is_music_play);
+			PlayMusic(music, music_num, is_music_play, type_change);
 		}
 		else if (GetAsyncKeyState(key_space) && 0x8000)
 		{
@@ -446,9 +451,149 @@ void Snake::GetDirection_Stop(double starttime, MUSIC& music)
 
 }
 
+void Snake::GetPath(Food& food)
+{
+	BFS Ai(this->body); // 调用有参构造初始地图
+	if (Ai.FindPath(food))
+	{
+		this->AI_path = Ai.GetPath(food); // 得到路径
+		this->AI_path.pop(); // 弹出第一个元素（蛇头）
+	}
+	else
+	{
+		P head = this->body.front(); // 得到蛇头
+		P next;
+		Ai.InitMap(this->body); // 刷新地图信息
+		for (int i = 0; i < 4; i++)
+		{
+			next.x = head.x + Dirx[i];
+			next.y = head.y + Diry[i];
+
+			if (Ai.bfs_map[next.x][next.y] == 1) // 如果下一个节点不可访问，跳过本次循环
+				continue;
+			else
+			{
+				P O_head = this->body.front(); // 得到蛇头
+				int x = next.x - O_head.x;
+				int y = next.y - O_head.y;
+				if (x == Dirx[0] && y == Diry[0])
+					direction = UP;
+				else if (x == Dirx[1] && y == Diry[1])
+					direction = DOWN;
+				else if (x == Dirx[2] && y == Diry[2])
+					direction = LEFT;
+				else if (x == Dirx[3] && y == Diry[3])
+					direction = RIGHT;
+				this->body.insert(body.begin(), next); // 将该坐标的位置压入数组首位，成为新的蛇头
+				return;
+			}
+		}
+		// 检测到四个方向都不可移动时
+		this->isGameOver = true;
+	}
+}
+
+void Snake::Get_AI_Direction()
+{
+	P N_head; // 新的蛇头坐标
+	N_head = this->AI_path.front(); // 返回队列的第一个坐标
+	P O_head; // 原来的蛇头
+	O_head = body.front(); // 返回原来的蛇头信息
+	int x = N_head.x - O_head.x;
+	int y = N_head.y - O_head.y;
+	if (x == Dirx[0] && y == Diry[0])
+		direction = UP;
+	else if (x == Dirx[1] && y == Diry[1])
+		direction = DOWN;
+	else if (x == Dirx[2] && y == Diry[2])
+		direction = LEFT;
+	else if (x == Dirx[3] && y == Diry[3])
+		direction = RIGHT;
+}
+
+void Snake::AiMove(Food& food, double starttime, MUSIC& music)
+{
+	DrawModel(isAi);
+	DrawLevel(level);
+	DrawScore(score);
+	double nowtime = fclock();
+	double time = nowtime - starttime;
+	DrawTime(time);
+	DrawGameInfo();
+
+	this->GetPath(food); // 先找到路径
+
+	if (!this->AI_path.empty())
+	{
+		while (!this->AI_path.empty())
+		{
+			if (kbmsg()) // 如果有按键按下
+			{
+				if (GetAsyncKeyState(key_space) && 0x8000) // 按键为 空格键 时
+				{
+					GetDirection_Stop(starttime, music);
+				}
+				else
+					GetDirection(starttime, music);
+			}
+			P N_head; // 新的蛇头坐标
+			N_head = this->AI_path.front(); // 返回队列的第一个坐标
+			Get_AI_Direction();
+			this->body.insert(body.begin(), N_head); // 将该坐标的位置压入数组首位，成为新的蛇头
+			this->AI_path.pop(); // 弹出该坐标信息
+			CleanSnake(); // 先删除蛇尾
+			if (Check_of_Food(food)) // 判断是否吃到食物
+			{
+				if (food.food_type == 1)
+					score++;
+				else if (food.food_type == 2)
+					score += 2;
+				else
+					score += 3;
+				DrawScore(score);
+				food.CreatFood(body);
+				food.DrawFood();
+			}
+			else
+			{
+				body.pop_back(); // 删除最后一个元素
+			}
+
+			if (!this->speedModel) // 当未开启手动速度调节模式时
+				Getlevel(); // 判断游戏速度等级
+			DrawLevel(level);
+			DrawSnake(); // 打印蛇
+			Snake_of_Sleep(); // 等待刷新
+
+			if (this->isGameOver == true) // 如果游戏结束,则结束该函数
+				return;
+		}
+	}
+	else
+	{
+		if (this->isGameOver == true) // 如果游戏结束,则结束该函数
+			return;
+
+		if (kbmsg()) // 如果有按键按下
+		{
+			if (GetAsyncKeyState(key_space) && 0x8000) // 按键为 空格键 时
+			{
+				GetDirection_Stop(starttime, music);
+			}
+			else
+				GetDirection(starttime, music);
+		}
+
+		CleanSnake(); // 先删除蛇尾
+		body.pop_back(); // 删除最后一个元素
+		DrawSnake(); // 打印蛇
+		Snake_of_Sleep(); // 等待刷新
+
+	}
+}
+
 void Snake::GetDirection(double starttime, MUSIC& music)
 {
-
 	if (GetAsyncKeyState('A') || GetAsyncKeyState('a'))
 	{
 		if (this->direction != RIGHT)
@@ -472,6 +617,7 @@ void Snake::GetDirection(double starttime, MUSIC& music)
 	else if (GetAsyncKeyState('Q') || GetAsyncKeyState('q'))
 	{
 		is_music_change = true;
+		type_change = true;
 		if (this->music_num > 1)
 			this->music_num--;
 		else
@@ -480,6 +626,7 @@ void Snake::GetDirection(double starttime, MUSIC& music)
 	else if (GetAsyncKeyState('E') || GetAsyncKeyState('e'))
 	{
 		is_music_change = true;
+		type_change = true;
 		if (this->music_num < 3)
 			this->music_num++;
 		else
@@ -633,7 +780,7 @@ void Snake::Check_of_Die()
 {
 	P head = this->body.front();
 
-	if (head.x == 0 || head.x == Windows_width - 220 || head.y == 0 || head.y == Windows_height - 100)
+	if (head.x == 0 || head.x*20 == Windows_width - 220 || head.y == 0 || head.y*20 == Windows_height - 100)
 		this->isGameOver = true;
 
 	std::vector<P>::iterator it;
@@ -657,19 +804,15 @@ Food::Food(std::vector<P>& snake)
 void Food::CreatFood(std::vector<P>& snake)
 {
 	P tmp_of_rand;
-	tmp_of_rand.x = rand() % (33) + 1; // x 的范围为 1-33
-	tmp_of_rand.y = rand() % (26) + 1; // y 的范围为 1-26
-	pos_of_food.x = tmp_of_rand.x * 20;
-	pos_of_food.y = tmp_of_rand.y * 20;
+	pos_of_food.x = rand() % (33) + 1; // x 的范围为 1-33
+	pos_of_food.y = rand() % (26) + 1; // y 的范围为 1-26
 	std::vector<P>::iterator it; // 迭代器
 	for (it = snake.begin(); it != snake.end(); it++) // 遍历蛇
 	{
 		if ((*it).x == pos_of_food.x && (*it).y == pos_of_food.y) // 如果蛇和食物重叠
 		{
-			tmp_of_rand.x = rand() % (33) + 1; // x 的范围为 1-33
-			tmp_of_rand.y = rand() % (26) + 1; // y 的范围为 1-26
-			pos_of_food.x = tmp_of_rand.x * 20;
-			pos_of_food.y = tmp_of_rand.y * 20;
+			pos_of_food.x = rand() % (33) + 1; // x 的范围为 1-33
+			pos_of_food.y = rand() % (26) + 1; // y 的范围为 1-26
 			it = snake.begin(); // 矫正迭代器指向蛇头，重新进行遍历
 		}
 	}
@@ -681,18 +824,136 @@ void Food::DrawFood()
 	switch (food)
 	{
 	case 1:
-		putimage(pos_of_food.x, pos_of_food.y, food_mushroom);
+		putimage(pos_of_food.x*20, pos_of_food.y*20, food_mushroom);
 		this->food_type = 1;
 		break;
 	case 2:
-		putimage(pos_of_food.x, pos_of_food.y, food_tomato);
+		putimage(pos_of_food.x*20, pos_of_food.y*20, food_tomato);
 		this->food_type = 2;
 		break;
 	case 3:
-		putimage(pos_of_food.x, pos_of_food.y, food_hamburger);
+		putimage(pos_of_food.x*20, pos_of_food.y*20, food_hamburger);
 		this->food_type = 3;
 		break;
 	default:
 		break;
 	}
+}
+
+BFS::BFS(std::vector<P>& snake)
+{
+	InitMap(snake);
+
+	// 申请一个二维数组用于存储父节点信息
+	this->bfs_father = new P * [35];
+	for (int i = 0; i < 35; i++)
+	{
+		this->bfs_father[i] = new P[30];
+	}
+
+	// 在父节点图中标记出蛇头的位置
+	bfs_father[this->head.x][this->head.y].x = -1;
+	bfs_father[this->head.x][this->head.y].y = -1;
+}
+
+BFS::~BFS()
+{
+	// 释放内存空间
+	for (int i = 0; i <35; i++)
+	{
+		delete[] bfs_father[i];
+	}
+	delete[] bfs_father;
+}
+
+bool BFS::FindPath(Food& food)
+{
+	std::queue<P> tmp; // 创建临时队列储存节点
+	tmp.push(this->head); // 将蛇头放入
+	P father; // 存放父节点
+	P now; // 当前节点
+	while (!tmp.empty()) // 当队列不为空时，继续执行
+	{
+		father = tmp.front(); // 从队列中取出父节点
+		tmp.pop(); // 弹出父节点
+
+		for (int i = 0; i < 4; i++)
+		{
+			// 得到移动后的坐标信息
+			now.x = father.x + Dirx[i];
+			now.y = father.y + Diry[i];
+
+			// 如果吃到食物，将该节点压入路径队列中
+			if (now.x == food.pos_of_food.x && now.y == food.pos_of_food.y)
+			{
+				// 在该节点上存储父节点信息
+				this->bfs_father[now.x][now.y].x = father.x;
+				this->bfs_father[now.x][now.y].y = father.y;
+				return true;
+			}
+			// 如果该节点为不可访问节点，则跳过此次循环
+			if (bfs_map[now.x][now.y] == 1)
+				continue;
+
+			// 如果上述两者都不满足
+			bfs_map[now.x][now.y] = 1; // 将该节点标记为不可访问节点
+			tmp.push(now); // 然后将该节点压入临时队列中
+
+			// 在该节点上存储父节点信息
+			this->bfs_father[now.x][now.y].x = father.x;
+			this->bfs_father[now.x][now.y].y = father.y;
+		}
+	}
+
+	return false;
+}
+
+void BFS::InitMap(std::vector<P>& snake)
+{
+	// 将墙标记为 1 （表示该节点不可访问）
+	for (int i = 0; i < 35; i++)
+	{
+		for (int j = 0; j < 30; j++)
+		{
+			if (i == 0 || i == 34)
+			{
+				this->bfs_map[i][j] = 1;
+			}
+			else if (j == 0 || j == 29)
+			{
+				this->bfs_map[i][j] = 1;
+			}
+			else
+			{
+				bfs_map[i][j] = 0; // 其他节点可访问
+			}
+		}
+	}
+
+	// 将蛇标记为 1 （表示该节点不可访问）
+	std::vector<P>::iterator i;
+	for (i = snake.begin(); i != snake.end(); i++)
+	{
+		this->bfs_map[(*i).x][(*i).y] = 1;
+	}
+
+	this->head = snake.front(); // 得到蛇头的位置
+}
+
+std::queue<P> BFS::GetPath(Food& food)
+{
+	P pos;
+	pos.x = food.pos_of_food.x;
+	pos.y = food.pos_of_food.y;
+
+	this->GetPath_action(pos);
+
+	return this->path;
+}
+
+void BFS::GetPath_action(P& pos)
+{
+	if (this->bfs_father[pos.x][pos.y].x != -1 && this->bfs_father[pos.x][pos.y].y != -1)
+		GetPath_action(bfs_father[pos.x][pos.y]);
+	this->path.push(pos);
 }
