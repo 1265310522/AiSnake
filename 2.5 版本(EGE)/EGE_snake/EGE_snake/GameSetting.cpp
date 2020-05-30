@@ -7,6 +7,7 @@ PIMAGE game_over; // 游戏结束图片
 PIMAGE game_model; // 空地的图片
 PIMAGE wall; // 墙的图片
 PIMAGE empty; // 空地的图片
+PIMAGE tree; // 障碍物的图片
 PIMAGE food_tomato; // 番茄食物的图片
 PIMAGE food_mushroom; // 蘑菇食物的图片
 PIMAGE food_hamburger; // 汉堡包食物的图片
@@ -34,6 +35,8 @@ void DrawMusic(int type)
 		sprintf(str, "   当前音乐：天门(てんもん) - 想い出は遠くの日々");
 	outtextrect(100, 615, 680, 645, str);
 }
+
+
 
 void DrawGameInfo()
 {
@@ -145,6 +148,7 @@ void GetImage()
 	game_over = newimage();
 	game_leaderboard = newimage();
 	game_model = newimage();
+	tree = newimage();
 
 	getimage(game_start, "gamestart.png");
 	getimage(game_model, "model.png");
@@ -152,6 +156,7 @@ void GetImage()
 	getimage(game_over, "gameover.png");
 	getimage(game_leaderboard, "leaderboard.png");
 	getimage(wall, "Carrot.png");
+	getimage(tree, "tree.png");
 	getimage(food_tomato, "fanqie.png");
 	getimage(food_mushroom, "mushroom.png");
 	getimage(food_hamburger, "hanbao.png");
@@ -205,6 +210,7 @@ Snake::Snake()
 	this->score = 0;
 	this->level = 1;
 	this->music_num = 1;
+	this->t = 0;
 	this->is_music_play = true;
 	this->is_music_change = false;
 	this->is_music_play = true;
@@ -306,10 +312,19 @@ void Snake::PlayerMove(Food& food, double starttime, MUSIC& music)
 		else if (food.food_type == 2)
 			score += 2;
 		else
+		{
 			score += 3;
+			t++;
+			if (t == 3)
+			{
+				DrawTree(food);
+				t = 0;
+			}
+		}
 		DrawScore(score);
 		food.CreatFood(body);
 		food.DrawFood();
+		
 	}
 	else
 	{
@@ -384,8 +399,14 @@ void Snake::InitDirection(double starttime)
 
 void Snake::GameOver()
 {
+	char name[10];
+	inputbox_getline("ID", "请输入您的ID", name, 10);
+	std::cin.get();
 	putimage(0, 0, game_over);
+	Draw_and_Write_GameOver(name);
 }
+
+
 
 void Snake::GetDirection_Stop(double starttime, MUSIC& music)
 {
@@ -394,6 +415,7 @@ void Snake::GetDirection_Stop(double starttime, MUSIC& music)
 		double nowtime = fclock();
 		double time = nowtime - starttime;
 		DrawTime(time);
+
 		Sleep(200);
 		if (GetAsyncKeyState(VK_ADD)) // 按键为小键盘上的 + 时
 		{
@@ -509,6 +531,54 @@ void Snake::Get_AI_Direction()
 		direction = LEFT;
 	else if (x == Dirx[3] && y == Diry[3])
 		direction = RIGHT;
+}
+
+void Snake::CreatTree(Food& food)
+{
+	P tree;
+	tree.x = rand() % (33) + 1; // x 的范围为 1-33
+	tree.y = rand() % (26) + 1; // y 的范围为 1-26
+	std::vector<P>::iterator it; // 迭代器
+	bool is_food_ok = false;
+	bool is_snake_ok = false;
+	while (1)
+	{
+		if (tree.x == food.pos_of_food.x && tree.y == food.pos_of_food.y)
+		{
+			tree.x = rand() % (33) + 1; // x 的范围为 1-33
+			tree.y = rand() % (26) + 1; // y 的范围为 1-26
+		}
+
+		for (it = body.begin(); it != body.end(); it++) // 遍历蛇
+		{
+			if ((*it).x == tree.x && (*it).y == tree.y) // 如果蛇和障碍物重叠
+			{
+				tree.x = rand() % (33) + 1; // x 的范围为 1-33
+				tree.y = rand() % (26) + 1; // y 的范围为 1-26
+				it = body.begin(); // 矫正迭代器指向蛇头，重新进行遍历
+				is_snake_ok = false;
+			}
+			else
+				is_snake_ok = true;
+		}
+
+		if (!(tree.x == food.pos_of_food.x && tree.y == food.pos_of_food.y))
+			is_food_ok = true;
+
+		if (is_snake_ok && is_food_ok)
+			break;
+	}
+	if (!obstacle.empty())
+		obstacle.insert(obstacle.begin(), tree);
+	else
+		obstacle.push_back(tree);
+}
+
+void Snake::DrawTree(Food& food)
+{
+	CreatTree(food);
+	P first = obstacle.front();
+	putimage(first.x*20, first.y*20, tree);
 }
 
 void Snake::AiMove(Food& food, double starttime, MUSIC& music)
@@ -792,8 +862,47 @@ void Snake::Check_of_Die()
 			break;
 		}
 	}
+
+	for (it = obstacle.begin(); it != obstacle.end(); it++)
+	{
+		if (head.x == (*it).x && head.y == (*it).y)
+		{
+			this->isGameOver = true;
+			break;
+		}
+	}
 }
 
+void Snake::Draw_and_Write_GameOver(char* name)
+{
+	time_t t;
+	struct tm* lt;
+	time(&t); // 获取Unix时间戳。
+	lt = localtime(&t); // 转为时间结构。
+	char str[50];
+	
+	setbkcolor(EGERGB(240, 255, 240));
+	setcolor(EGERGB(191, 293, 255));
+	setfont(30, 0, "微软雅黑");
+	sprintf(str, "姓名：%s", name);	
+	outtextrect(20, 320, 240, 360, str);
+	sprintf(str, "得分：%d", score);
+	outtextrect(20, 360, 240, 400, str);
+	sprintf(str, "时间：%02d-%02d-%02d %02d:%02d:%02d", lt->tm_year + 1900, lt->tm_mon + 1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
+	outtextrect(20, 400, 300, 440, str);
+
+	std::ofstream OutFile;
+	OutFile.open("leaderboard.txt", std::ios::app);
+	OutFile << name << std::endl;
+	OutFile << score << std::endl;
+	OutFile << lt->tm_year + 1900 << std::endl
+			<< lt->tm_mon + 1 << std::endl
+			<< lt->tm_mday << std::endl
+			<< lt->tm_hour << std::endl
+			<< lt->tm_min << std::endl
+			<< lt->tm_sec << std::endl;
+	OutFile.close();
+}
 
 Food::Food(std::vector<P>& snake)
 {

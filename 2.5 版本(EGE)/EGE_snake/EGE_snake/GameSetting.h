@@ -1,23 +1,33 @@
 #pragma once
-#pragma once
 #include <iostream>
 #include <vector>
 #include <queue>
 #include <Windows.h> 
 #include <Mmsystem.h>
 #include <graphics.h>
+#include <ctime>
+#include <fstream>
 #pragma comment(lib,"winmm.lib")
 void DrawRscore(int rscore);
 void DrawTime(double time);
 void DrawMusic(int type);
 void PlayMusic(MUSIC& music, int type, bool play,bool type_change);
-
-
-
 void GetImage(); // 获得图片
 
 static const int Windows_width = 900; // 设置宽
 static const int Windows_height = 680; // 设置高
+
+typedef struct leaderboard
+{
+	char name[10];
+	int score;
+	int year;
+	int month;
+	int day;
+	int hour;
+	int min;
+	int sec;
+}L;
 
 typedef struct Point {
 	int x;
@@ -73,12 +83,13 @@ class Snake {
 public:
 	Snake();
 	std::vector<P> body; // 存储蛇信息
-
+	std::vector<P> obstacle; // 存储障碍物信息
 public:
 	void PlayerMove(Food& food, double starttime, MUSIC& music); // 玩家模式移动
 	void AiMove(Food& food, double starttime, MUSIC& music); // Ai模式移动
 	void InitDirection(double starttime); // 初始化移动方向
 	void GameOver(); // 游戏结束
+public:
 	bool isGameOver; // 是否死亡
 	int score; // 分数
 	int music_num; // 音乐选择
@@ -98,10 +109,13 @@ private:
 	void GetDirection_Stop(double starttime, MUSIC& music); // 停止移动
 	void GetPath(Food& food); // 得到路径
 	void Get_AI_Direction(); // 找到 AI 的运动方向
-
+	void CreatTree(Food& food); // 创造障碍物
+	void DrawTree(Food& food); // 打印障碍物
+	void Draw_and_Write_GameOver(char* name); // 打印成绩
 private:
 	int level; // 蛇移动的快慢等级	
 	int direction; // 运行方向
+	int t; // 时间节点
 	bool isEatFood; // 是否吃到食物
 	bool speedModel; // 速度模式(false 为 自动, true 为 手动)
 };

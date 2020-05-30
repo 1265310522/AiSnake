@@ -1,5 +1,5 @@
 #include "GameSetting.h"
-#include <fstream>
+#include <algorithm> // vector 自定义排序
 
 using namespace std;
 
@@ -9,6 +9,73 @@ extern PIMAGE game_start; // 游戏开始图片
 extern PIMAGE game_help; // 游戏帮助图片
 extern PIMAGE game_leaderboard; // 排行榜图片
 extern PIMAGE game_model; // 模式图片
+
+vector<L> read; // 存储历史记录
+
+bool ReadLeaderboard(std::ifstream& ReadFile)
+{
+	L tmp;
+	ReadFile >> tmp.name;
+	ReadFile >> tmp.score;
+	ReadFile >> tmp.year;
+	ReadFile >> tmp.month;
+	ReadFile >> tmp.day;
+	ReadFile >> tmp.hour;
+	ReadFile >> tmp.min;
+	ReadFile >> tmp.sec;
+
+	read.push_back(tmp);
+	if (ReadFile.peek() == EOF)
+		return true; // 停止读取
+	else
+		return false; // 继续读取
+
+}
+
+bool Comp(const L& max, const L& min)
+{
+	return max.score > min.score;
+}
+void Drawleaderboard()
+{
+	ifstream ReadFile;
+	ReadFile.open("leaderboard.txt"); // 打开文件夹
+	while (!ReadLeaderboard(ReadFile));
+	getbkcolor(game_leaderboard);
+	setbkmode(TRANSPARENT);
+	setbkcolor(getbkcolor(game_leaderboard));
+	//设置背景颜色为
+	setcolor(GREEN);
+	setfont(30, 0, "微软雅黑");
+	sort(read.begin(), read.end(), Comp);
+	outtextrect(250, 30, 350, 60, "排名");
+	outtextrect(350, 30, 450, 60, "姓名");
+	outtextrect(450, 30, 550, 60, "分数");
+	outtextrect(550, 30, 650, 60, "时间");
+	vector<L>::iterator it;
+	char time[20];
+	char leader[10];
+	char score[4];
+	int i = 1;
+	int num = 0;
+	for (it = read.begin(); it != read.end(); it++,i++)
+	{
+		sprintf(leader, "第%d名", i);
+		sprintf(time,"%02d-%02d-%02d %02d:%02d:%02d",(*it).year, (*it).month, (*it).day, (*it).hour, (*it).min, (*it).sec);
+		sprintf(score, "%d", (*it).score);
+		outtextrect(250, 30 + (i * 50), 350, 60 + (i * 50), leader);
+		outtextrect(350, 30 + (i * 50), 450, 60 + (i * 50), (*it).name);
+		outtextrect(450, 30 + (i * 50), 550, 60 + (i * 50), score);
+		outtextrect(550, 30 + (i * 50), 650, 60 + (i * 50), time);
+		num++;
+		if (num == 9)
+		{
+			break;
+		}
+	}
+	ReadFile.close();
+}
+
 
 void WriteScore(int Score) // 记录最高分数
 {
@@ -27,6 +94,8 @@ int ReadScore() // 读取最高分数
 	ReadFile.close(); // 关闭文件夹
 	return score;
 }
+
+
 
 void PlageGame(); // 游戏开始
 void Menu(); // 菜单
@@ -55,12 +124,14 @@ enum flag {
 	quit = 3,
 };
 
-//int mouse(int x1, int y1, int x2, int y2)   //判断在(x1,y1)(x2,y2)矩形范围内单机左键 
-//{
-//	if (msg.x > x1 && msg.x<x2 && msg.y > y1 && msg.y < y2 && (int)msg.is_down() == 1 && (int)msg.is_left() == 1)
-//		return 1;
-//	return 0;
-//}
+int mouse(int x1, int y1, int x2, int y2)   //判断在(x1,y1)(x2,y2)矩形范围内单机左键 
+{
+	if (msg.x > x1 && msg.x<x2 && msg.y > y1 && msg.y < y2 && (int)msg.is_down() == 1 && (int)msg.is_left() == 1)
+		return 1;
+	return 0;
+}
+
+
 
 void Menu()
 {
@@ -69,31 +140,8 @@ void Menu()
 	while (!is_quie)
 	{
 		putimage(0, 0, 900, 680, game_start, 0, 0, 900, 680);
-		for (; is_run(); delay_fps(60))
-		{
-			if (GetAsyncKeyState(key_num1))
-			{
-				flag = playgame;
-				break;
-			}
-			else if (GetAsyncKeyState(key_num2))
-			{
-				flag = leaderboard;
-				break;
-			}
-			else if (GetAsyncKeyState(key_num3))
-			{
-				flag = help;
-				break;
-			}
-			else if (GetAsyncKeyState(key_num4))
-			{
-				flag = quit;
-				break;
-			}
-		}
 
-		/*for (; is_run() ; delay_fps(60))
+		for (; is_run() ; delay_fps(60))
 		{
 			while (mousemsg())
 			{
@@ -119,7 +167,7 @@ void Menu()
 				flag = quit;
 				break;
 			}
-		}*/
+		}
 
 		switch (flag)
 		{
@@ -132,7 +180,8 @@ void Menu()
 			getch();
 			break;
 		case leaderboard:
-			putimage(0, 0, 900, 680, game_leaderboard, 0, 0, 900, 680);
+			putimage(0, 0, 900, 680, game_leaderboard, 0, 0, 900, 680);	
+			Drawleaderboard();
 			getch();
 			break;
 		case quit:
@@ -145,17 +194,21 @@ void Menu()
 void PlageGame()
 {
 	// 模式选择
+	srand(unsigned(time(0)));
 	bool model = false;
 	putimage(0, 0, game_model);
-	while(1)
+	for (; is_run(); delay_fps(60))
 	{
-		Sleep(200);
-		if (GetAsyncKeyState(key_num1))
+		while (mousemsg())
+		{
+			msg = getmouse();
+		}
+		if (mouse(310, 150, 660, 250))
 		{
 			model = false;
 			break;
 		}
-		else if (GetAsyncKeyState(key_num2))
+		if (mouse(310, 450, 660, 540))
 		{
 			model = true;
 			break;
@@ -183,6 +236,7 @@ void PlageGame()
 	DrawMusic(1);
 	
 	// 进入游戏
+	
 	while (!snake.isGameOver)
 	{
 		if (snake.is_music_change)
@@ -199,6 +253,7 @@ void PlageGame()
 			snake.AiMove(food, starttime, music);
 	}
 
+	// x:20-320;y:240-460
 	snake.GameOver();
 
 	// 写入最高分
