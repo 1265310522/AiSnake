@@ -929,7 +929,18 @@ void Food::CreatFood(std::vector<P>& snake)
 
 void Food::DrawFood()
 {
-	int food = rand() % 3 + 1;
+	int tmp = rand() % 100 + 1;
+	int food = 0;
+
+	// 三种食物的出现概率分别为 20%、30%、50%
+	if (tmp >= 1 && tmp < 20)
+		food = 3;
+	else if (tmp >= 20 && tmp < 50)
+		food = 2;
+	else
+		food = 1;
+
+
 	switch (food)
 	{
 	case 1:
