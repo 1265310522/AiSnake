@@ -164,9 +164,8 @@ void GetImage()
 	getimage(snake_body, "snakeBody.jpg");
 	getimage(snake_head_up, "snakeHeadUp.png");
 	getimage(snake_head_down, "snakeHeadDown.png");
-	getimage(snake_head_left, "snakeHeadLeft.png");
 	getimage(snake_head_right, "snakeHeadRight.png");
-
+	getimage(snake_head_left, "snakeHeadLeft.png");
 }
 
 void Map::DrawMap()
@@ -235,10 +234,10 @@ void Snake::DrawSnake()
 		putimage(head.x*20, head.y*20, snake_head_down);
 		break;
 	case LEFT:
-		putimage(head.x*20, head.y*20, snake_head_right);
+		putimage(head.x*20, head.y*20, snake_head_left);
 		break;
 	case RIGHT:
-		putimage(head.x*20, head.y*20, snake_head_left);
+		putimage(head.x*20, head.y*20, snake_head_right );
 		break;
 	}
 
