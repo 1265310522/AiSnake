@@ -18,8 +18,8 @@ PIMAGE snake_head_left; // 蛇头向左
 PIMAGE snake_head_right; // 蛇头向右
 
 // 定义路径，上下左右
-int Dirx[4] = { 0,0,-1,1 };
-int Diry[4] = { -1,1,0,0 };
+int Dirx[4] = { 0,-1,0,1 };
+int Diry[4] = { -1,0,1,0 };
 
 void DrawMusic(int type)
 {
@@ -28,11 +28,13 @@ void DrawMusic(int type)
 	setcolor(EGERGB(191, 293, 255));
 	setfont(30, 0, "微软雅黑");
 	if (type == 1)
-		sprintf(str, "        当前音乐：Jo Blankenburg - Memento        ");
+		sprintf(str, "                   当前音乐：Mich - Skyland               ");
 	else if (type == 2)
 		sprintf(str, "                  当前音乐：傅许 - 夏日之梦                  ");
 	else if (type == 3)
-		sprintf(str, "   当前音乐：天门(てんもん) - 想い出は遠くの日々");
+		sprintf(str, "   当前音乐：天门(てんもん) - 想い出は遠くの日々  ");
+	else if (type == 4)
+		sprintf(str, "        当前音乐：Jo Blankenburg - Memento        ");
 	outtextrect(100, 615, 680, 645, str);
 }
 
@@ -67,9 +69,9 @@ void DrawModel(bool model)
 	setfont(25, 0, "微软雅黑");
 	setcolor(BLACK);
 	if (!model)
-		outtextrect(715, 35, 815, 75, "当前模式：玩家");
+		outtextrect(710, 35, 815, 75, "当前模式：玩家");
 	else
-		outtextrect(715, 35, 815, 75, "当前模式：AI");
+		outtextrect(710, 35, 815, 75, "当前模式：AI");
 }
 
 void DrawLevel(int level)
@@ -79,7 +81,7 @@ void DrawLevel(int level)
 	setcolor(BLACK);
 	setfont(25, 0, "微软雅黑");
 	sprintf(str, "当前速度等级：%d  ", level);
-	outtextrect(715, 75, 815, 115, str);
+	outtextrect(710, 75, 815, 115, str);
 }
 
 void DrawScore(int score)
@@ -89,7 +91,7 @@ void DrawScore(int score)
 	setcolor(BLACK);
 	setfont(25, 0, "微软雅黑");
 	sprintf(str, "当前游戏得分：%d", score);
-	outtextrect(715, 115, 815, 155, str);
+	outtextrect(710, 115, 815, 155, str);
 }
 
 void DrawRscore(int rscore)
@@ -99,7 +101,7 @@ void DrawRscore(int rscore)
 	setcolor(BLACK);
 	setfont(25, 0, "微软雅黑");
 	sprintf(str, "最高游戏得分：%d", rscore);
-	outtextrect(715, 155, 815, 195, str);
+	outtextrect(710, 155, 815, 195, str);
 }
 
 void DrawTime(double time)
@@ -109,7 +111,7 @@ void DrawTime(double time)
 	setcolor(BLACK);
 	setfont(25, 0, "微软雅黑");
 	sprintf(str, "游戏时间：%d", (int)time);
-	outtextrect(715, 195, 815, 235, str);
+	outtextrect(710, 195, 815, 235, str);
 }
 
 void PlayMusic(MUSIC& music, int type, bool play, bool type_change)
@@ -117,11 +119,13 @@ void PlayMusic(MUSIC& music, int type, bool play, bool type_change)
 	if (type_change)
 	{
 		if (type == 1)
-			music.OpenFile("Jo Blankenburg - Memento.mp3");
+			music.OpenFile("Mich - Skyland.mp3");			
 		else if (type == 2)
 			music.OpenFile("傅许 - 夏日之梦.mp3");
 		else if (type == 3)
 			music.OpenFile("天门 (てんもん) - 想い出は遠くの日々.mp3");
+		else if(type==4)
+			music.OpenFile("Jo Blankenburg - Memento.mp3");
 		DrawMusic(type);
 	}
 	if (play)
@@ -442,13 +446,13 @@ void Snake::GetDirection_Stop(double starttime, MUSIC& music)
 			if (this->music_num > 1)
 				this->music_num--;
 			else
-				this->music_num = 3;
+				this->music_num = 4;
 			PlayMusic(music, music_num, is_music_play , type_change);
 		}
 		else if (GetAsyncKeyState('E') || GetAsyncKeyState('e'))
 		{
 			type_change = true;
-			if (this->music_num < 3)
+			if (this->music_num < 4)
 				this->music_num++;
 			else
 				this->music_num = 1;
@@ -475,42 +479,130 @@ void Snake::GetDirection_Stop(double starttime, MUSIC& music)
 void Snake::GetPath(Food& food)
 {
 	BFS Ai(this->body); // 调用有参构造初始地图
-	if (Ai.FindPath(food))
+
+	if (Ai.FindPath(food.pos_of_food))
 	{
-		this->AI_path = Ai.GetPath(food); // 得到路径
-		this->AI_path.pop(); // 弹出第一个元素（蛇头）
+		std::vector<P> fock_body(body);  // 产生虚拟蛇
+		std::queue<P> fock_path; // 虚拟路径
+		fock_path = Ai.GetPath(food); // 得到虚拟路径
+		fock_path.pop(); // 弹出蛇头
+
+		// 派出虚拟蛇吃食物
+		while (!fock_path.empty())
+		{
+			P N_head; 
+			N_head = fock_path.front(); 
+			fock_body.insert(fock_body.begin(), N_head);
+			fock_body.pop_back();
+			fock_path.pop(); 
+		}
+
+		Ai.InitMap(fock_body); // 初始化地图数据
+		if (Ai.FindPath(fock_body.back())) // 吃完食物后能找的蛇尾
+		{
+			Ai.InitMap(this->body); // 初始化地图数据
+			Ai.FindPath(food.pos_of_food);
+			this->AI_path = Ai.GetPath(food);
+			this->AI_path.pop();
+		}
+		else // 吃完后找不到蛇尾
+		{
+			Ai.InitMap(body); // 初始化地图数据
+			if (Ai.FindPath(body.back())) // 检查能否找到现在的蛇尾
+			{
+				// 在父节点图中标记出蛇头的位置			
+				Ai.InitMap(body); // 初始化地图数据
+				Ai.DFS_tail(body.front(), body.back());
+				while (!Ai.path.empty())
+				{
+					Ai.path.pop();
+				}
+				Ai.dfs_father[body.front().x][body.front().y].x = -1;
+				Ai.dfs_father[body.front().x][body.front().y].y = -1;
+				this->AI_path = Ai.GetdfsPath(body.back()); // 得到路径				
+			}
+			else
+			{
+				P head = this->body.front(); // 得到蛇头
+				P next;
+				Ai.InitMap(this->body); // 刷新地图信息
+				for (int i = 0; i < 4; i++)
+				{
+					next.x = head.x + Dirx[i];
+					next.y = head.y + Diry[i];
+
+					if (Ai.bfs_map[next.x][next.y] == 1) // 如果下一个节点不可访问，跳过本次循环
+						continue;
+					else
+					{
+						P O_head = this->body.front(); // 得到蛇头
+						int x = next.x - O_head.x;
+						int y = next.y - O_head.y;
+						if (x == Dirx[0] && y == Diry[0])
+							direction = UP;
+						else if (x == Dirx[1] && y == Diry[1])
+							direction = DOWN;
+						else if (x == Dirx[2] && y == Diry[2])
+							direction = LEFT;
+						else if (x == Dirx[3] && y == Diry[3])
+							direction = RIGHT;
+						this->body.insert(body.begin(), next); // 将该坐标的位置压入数组首位，成为新的蛇头
+						return;
+					}
+				}
+				// 检测到四个方向都不可移动时
+				this->isGameOver = true;
+			}
+		}
 	}
 	else
 	{
-		P head = this->body.front(); // 得到蛇头
-		P next;
-		Ai.InitMap(this->body); // 刷新地图信息
-		for (int i = 0; i < 4; i++)
+		Ai.InitMap(body); // 初始化地图数据
+		if (Ai.FindPath(body.back())) // 检查能否找到现在的蛇尾
 		{
-			next.x = head.x + Dirx[i];
-			next.y = head.y + Diry[i];
-
-			if (Ai.bfs_map[next.x][next.y] == 1) // 如果下一个节点不可访问，跳过本次循环
-				continue;
-			else
+			// 在父节点图中标记出蛇头的位置			
+			Ai.InitMap(body); // 初始化地图数据
+			Ai.DFS_tail(body.front(), body.back());		
+			while (!Ai.path.empty())
 			{
-				P O_head = this->body.front(); // 得到蛇头
-				int x = next.x - O_head.x;
-				int y = next.y - O_head.y;
-				if (x == Dirx[0] && y == Diry[0])
-					direction = UP;
-				else if (x == Dirx[1] && y == Diry[1])
-					direction = DOWN;
-				else if (x == Dirx[2] && y == Diry[2])
-					direction = LEFT;
-				else if (x == Dirx[3] && y == Diry[3])
-					direction = RIGHT;
-				this->body.insert(body.begin(), next); // 将该坐标的位置压入数组首位，成为新的蛇头
-				return;
+				Ai.path.pop();
 			}
+			Ai.dfs_father[body.front().x][body.front().y].x = -1;
+			Ai.dfs_father[body.front().x][body.front().y].y = -1;
+			this->AI_path = Ai.GetdfsPath(body.back()); // 得到路径				
 		}
-		// 检测到四个方向都不可移动时
-		this->isGameOver = true;
+		else
+		{
+			P head = this->body.front(); // 得到蛇头
+			P next;
+			Ai.InitMap(this->body); // 刷新地图信息
+			for (int i = 0; i < 4; i++)
+			{
+				next.x = head.x + Dirx[i];
+				next.y = head.y + Diry[i];
+
+				if (Ai.bfs_map[next.x][next.y] == 1) // 如果下一个节点不可访问，跳过本次循环
+					continue;
+				else
+				{
+					P O_head = this->body.front(); // 得到蛇头
+					int x = next.x - O_head.x;
+					int y = next.y - O_head.y;
+					if (x == Dirx[0] && y == Diry[0])
+						direction = UP;
+					else if (x == Dirx[1] && y == Diry[1])
+						direction = DOWN;
+					else if (x == Dirx[2] && y == Diry[2])
+						direction = LEFT;
+					else if (x == Dirx[3] && y == Diry[3])
+						direction = RIGHT;
+					this->body.insert(body.begin(), next); // 将该坐标的位置压入数组首位，成为新的蛇头
+					return;
+				}
+			}
+			// 检测到四个方向都不可移动时
+			this->isGameOver = true;
+		}
 	}
 }
 
@@ -524,9 +616,9 @@ void Snake::Get_AI_Direction()
 	int y = N_head.y - O_head.y;
 	if (x == Dirx[0] && y == Diry[0])
 		direction = UP;
-	else if (x == Dirx[1] && y == Diry[1])
-		direction = DOWN;
 	else if (x == Dirx[2] && y == Diry[2])
+		direction = DOWN;
+	else if (x == Dirx[1] && y == Diry[1])
 		direction = LEFT;
 	else if (x == Dirx[3] && y == Diry[3])
 		direction = RIGHT;
@@ -613,12 +705,7 @@ void Snake::AiMove(Food& food, double starttime, MUSIC& music)
 			CleanSnake(); // 先删除蛇尾
 			if (Check_of_Food(food)) // 判断是否吃到食物
 			{
-				if (food.food_type == 1)
-					score++;
-				else if (food.food_type == 2)
-					score += 2;
-				else
-					score += 3;
+				score++;
 				DrawScore(score);
 				food.CreatFood(body);
 				food.DrawFood();
@@ -690,13 +777,13 @@ void Snake::GetDirection(double starttime, MUSIC& music)
 		if (this->music_num > 1)
 			this->music_num--;
 		else
-			this->music_num = 3;
+			this->music_num = 4;
 	}
 	else if (GetAsyncKeyState('E') || GetAsyncKeyState('e'))
 	{
 		is_music_change = true;
 		type_change = true;
-		if (this->music_num < 3)
+		if (this->music_num < 4)
 			this->music_num++;
 		else
 			this->music_num = 1;
@@ -840,7 +927,7 @@ void Snake::Snake_of_Sleep()
 		Sleep(40);
 		break;
 	case 10:
-		Sleep(20);
+		Sleep(5);
 		break;
 	}
 }
@@ -961,8 +1048,7 @@ void Food::DrawFood()
 
 BFS::BFS(std::vector<P>& snake)
 {
-	InitMap(snake);
-
+	
 	// 申请一个二维数组用于存储父节点信息
 	this->bfs_father = new P * [35];
 	for (int i = 0; i < 35; i++)
@@ -970,9 +1056,14 @@ BFS::BFS(std::vector<P>& snake)
 		this->bfs_father[i] = new P[30];
 	}
 
-	// 在父节点图中标记出蛇头的位置
-	bfs_father[this->head.x][this->head.y].x = -1;
-	bfs_father[this->head.x][this->head.y].y = -1;
+
+	dfs_father = new P * [35];
+	for (int i = 0; i < 35; i++)
+	{
+		dfs_father[i] = new P[30];
+	}
+
+	InitMap(snake);
 }
 
 BFS::~BFS()
@@ -983,9 +1074,15 @@ BFS::~BFS()
 		delete[] bfs_father[i];
 	}
 	delete[] bfs_father;
+
+	for (int i = 0; i < 35; i++)
+	{
+		delete[] dfs_father[i];
+	}
+	delete[] dfs_father;
 }
 
-bool BFS::FindPath(Food& food)
+bool BFS::FindPath(P& endpos)
 {
 	std::queue<P> tmp; // 创建临时队列储存节点
 	tmp.push(this->head); // 将蛇头放入
@@ -1003,7 +1100,7 @@ bool BFS::FindPath(Food& food)
 			now.y = father.y + Diry[i];
 
 			// 如果吃到食物，将该节点压入路径队列中
-			if (now.x == food.pos_of_food.x && now.y == food.pos_of_food.y)
+			if (now.x == endpos.x && now.y == endpos.y)
 			{
 				// 在该节点上存储父节点信息
 				this->bfs_father[now.x][now.y].x = father.x;
@@ -1023,7 +1120,6 @@ bool BFS::FindPath(Food& food)
 			this->bfs_father[now.x][now.y].y = father.y;
 		}
 	}
-
 	return false;
 }
 
@@ -1056,7 +1152,10 @@ void BFS::InitMap(std::vector<P>& snake)
 		this->bfs_map[(*i).x][(*i).y] = 1;
 	}
 
-	this->head = snake.front(); // 得到蛇头的位置
+	this->head = snake.front();
+
+	bfs_father[snake.front().x][snake.front().y].x = -1;
+	bfs_father[snake.front().x][snake.front().y].y = -1;
 }
 
 std::queue<P> BFS::GetPath(Food& food)
@@ -1064,6 +1163,10 @@ std::queue<P> BFS::GetPath(Food& food)
 	P pos;
 	pos.x = food.pos_of_food.x;
 	pos.y = food.pos_of_food.y;
+	while (!this->path.empty())
+	{
+		this->path.pop();
+	}
 
 	this->GetPath_action(pos);
 
@@ -1072,7 +1175,58 @@ std::queue<P> BFS::GetPath(Food& food)
 
 void BFS::GetPath_action(P& pos)
 {
-	if (this->bfs_father[pos.x][pos.y].x != -1 && this->bfs_father[pos.x][pos.y].y != -1)
+	if (bfs_father[pos.x][pos.y].x != -1 && bfs_father[pos.x][pos.y].y != -1)
 		GetPath_action(bfs_father[pos.x][pos.y]);
 	this->path.push(pos);
+}
+
+bool BFS::DFS_tail(P& head,P& endpos)
+{
+	P now;
+	bool tmp;
+	for (int i = 0; i < 4; i++)
+	{
+		now.x = head.x + Dirx[i];
+		now.y = head.y + Diry[i];
+		if (now.x == endpos.x && now.y == endpos.y)
+		{
+			this->dfs_father[now.x][now.y].x = head.x;
+			this->dfs_father[now.x][now.y].y = head.y;
+			return true;
+		}
+		else if (this->bfs_map[now.x][now.y] == 1)
+		{
+			continue;
+		}
+		else
+		{
+			this->dfs_father[now.x][now.y].x = head.x;
+			this->dfs_father[now.x][now.y].y = head.y;
+			bfs_map[head.x][head.y] = 1;
+			tmp = DFS_tail(now,endpos);
+			if (tmp)
+				return true;
+		}
+	}
+	return false;
+}
+
+void BFS::GetdfsPath_action(P& endpos)
+{
+
+	if (this->dfs_father[endpos.x][endpos.y].x != -1 && this->dfs_father[endpos.x][endpos.y].y != -1)
+	{
+		P tmp;
+		tmp.x = dfs_father[endpos.x][endpos.y].x;
+		tmp.y = dfs_father[endpos.x][endpos.y].y;
+		GetdfsPath_action(tmp);
+	}
+
+	this->path.push(endpos);
+}
+
+std::queue<P> BFS::GetdfsPath(P& endpos)
+{
+	this->GetdfsPath_action(endpos);
+	return this->path;
 }

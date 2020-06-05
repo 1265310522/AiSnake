@@ -128,15 +128,19 @@ class BFS {
 public:
 	BFS(std::vector<P>& snake);
 	~BFS();
-	bool FindPath(Food& food); // 找到路径（包含无用的信息）
+	bool FindPath(P& endpos); // 找到路径（包含无用的信息）
 private:
 	friend class Snake;
 	P head; // 存储蛇头的位置
 	std::queue<P> path; // 存储路径
 	int bfs_map[35][30]; // 二维数组存储
 	P** bfs_father; // 用二维数组存储父节点
+	P** dfs_father; // 申请一个二维数组用于存储父节点信息
 private:
 	void InitMap(std::vector<P>& snake);
 	std::queue<P> GetPath(Food& food); // 得到路径（剔除无用的信息）
 	void GetPath_action(P& pos);
+	bool DFS_tail(P& head,P& endpos); // DFS 找到最远路径
+	std::queue<P> GetdfsPath(P& endpos); // 得到路径（剔除无用的信息）
+	void GetdfsPath_action(P& endpos);
 };
